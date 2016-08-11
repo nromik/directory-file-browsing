@@ -10,50 +10,93 @@ using System.Web.Http;
 
 namespace FolderExplorer
 {
-    public static class DirectoryDriver
+    public class DirectoryDriver
     {
+        private FolderInfo folderInfo;
+        private string currentPath = null;
 
-        public static FolderInfo GetFolderInfo(string path)
+        public DirectoryDriver(string path)
+        {
+            folderInfo = new FolderInfo();
+            currentPath = string.IsNullOrEmpty(path) ? Directory.GetCurrentDirectory() : path;
+            folderInfo.CurrentDirectory = currentPath;
+            folderInfo.ErrorMessage = new List<string>();
+            folderInfo.CountFiles = new List<string>();
+        }
+
+        public FolderInfo GetFolderInfo(bool isCount = false,
+            params Func<long, bool>[] conditionsCount)
         {
 
-            if (string.IsNullOrEmpty(path))
-            {
-                path = Directory.GetCurrentDirectory();
-            }
-
-            var result = new FolderInfo();
-
-            result.CurrentDirectory = path;
-
             // отображение дисков компютера
-            if (path == "root")
+            if (currentPath == "root")
             {
-
                 DriveInfo[] drives = DriveInfo.GetDrives();
-                result.Directoreis = drives.Select(d => d.Name).ToArray();
-
-                return result;
+                folderInfo.Directoreis = drives.Select(d => d.Name).ToArray();
             }
 
-            if (Directory.Exists(path))
+            if (Directory.Exists(currentPath))
             {
+                folderInfo.ParentDirectory = Regex.IsMatch(currentPath, @"^[A-Za-z]+:\\$")
+                    ? "root"
+                    : Directory.GetParent(currentPath).ToString();
 
-                result.ParentDirectory = Regex.IsMatch(path, @"^[A-Za-z]+:\\$") 
-                    ? "root" : Directory.GetParent(path).ToString();
-               
                 try
                 {
-                    result.Directoreis = Directory.GetDirectories(path);
-                    result.Files = Directory.GetFiles(path);
+                    folderInfo.Directoreis = Directory.GetDirectories(currentPath);
+                    folderInfo.Files = Directory.GetFiles(currentPath);
                 }
-                // для случаев отсутствия прав доступа просмотра каталога
+                    // для случаев отсутствия прав доступа просмотра каталога
                 catch (UnauthorizedAccessException exception)
                 {
-                    result.ErrorMessage = exception.Message;
+                    folderInfo.ErrorMessage.Add(exception.Message);
                 }
-                return result;
+                if (isCount)
+                    CountFiles(conditionsCount);
             }
-            return null;
+            else
+            {
+                folderInfo.CurrentDirectory = null;
+            }
+            return folderInfo;
+        }
+
+        private void CountFiles(params Func<long, bool>[] conditionsCount)
+        {
+            var listSizeFile = GetListSizeFile();
+
+            foreach (var condition in conditionsCount)
+            {
+                var count = listSizeFile.Count(condition);
+                folderInfo.CountFiles.Add(count.ToString());
+            }
+        }
+
+        private List<long> GetListSizeFile()
+        {
+           List<long> listSizeFile = new List<long>();
+
+            foreach (var dir in TreeWalker(currentPath, Directory.GetDirectories))
+            {
+                try
+                {
+                    string[] files = Directory.GetFiles(dir);
+                    listSizeFile.AddRange(files.Select(s => new FileInfo(s).Length));
+                }
+                catch (Exception exception)
+                {
+                    folderInfo.ErrorMessage.Add(exception.Message);
+                }
+
+            }
+            return listSizeFile;
+        }
+
+        private IEnumerable<T> TreeWalker<T>(T root, Func<T, IEnumerable<T>> next)
+        {
+            //TODO: Ексепшен - слишком длиное имя каталога
+            var q = next(root).SelectMany(n => TreeWalker(n, next));
+            return Enumerable.Repeat(root, 1).Concat(q);
         }
 
 
@@ -69,13 +112,16 @@ namespace FolderExplorer
         public string[] Files { get; set; }
 
         [DataMember(Name = "errorMessage")]
-        public string ErrorMessage { get; set; }
+        public List<string> ErrorMessage { get; set; }
 
         [DataMember(Name = "parentDirectory")]
         public string ParentDirectory { get; set; }
 
         [DataMember(Name = "currentDirectory")]
         public string CurrentDirectory { get; set; }
+
+        [DataMember(Name = "countFiles")]
+        public List<string> CountFiles { get; set; }
     }
 
 }

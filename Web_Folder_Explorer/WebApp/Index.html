@@ -1,19 +1,27 @@
 ﻿<!DOCTYPE html>
-<html>
+<html >
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Web Folder Explorer</title>
+
+
+    <script src="scripts/lib/angular.min.js"></script>
+
+    <script src="scripts/app/controller/explorerApp.js"></script>
+
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/bootstrap-theme.min.css" rel="stylesheet"/>
     <link href="Content/main.css" rel="stylesheet" />
-    <meta charset="utf-8" />
+   
 </head>
 <body>
-
-<div class="container">
+    <br/>
+<div class="container" ng-app="explorerModel" ng-controller="explorerCtrl">
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-bordered" id="fileSize">
+
+            <p><input type="checkbox" ng-model="isCountFiles" ng-click="ReloadData()"/> See a count of files</p>
+            <table class="table table-bordered" id="fileSize" ng-show="isCountFiles">
                 <thead>
                 <tr>
                     <th>Less 10Mb</th>
@@ -21,24 +29,22 @@
                     <th>More 100Mb</th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr>
-                    <td>Loading...</td>
-                    <td>Loading...</td>
-                    <td>Loading...</td>
+                    <td>{{countFiles[0]}}<span ng-hide="loading">Loading...</span></td>
+                    <td>{{countFiles[1]}}<span ng-hide="loading">Loading...</span></td>
+                    <td>{{countFiles[2]}}<span ng-hide="loading">Loading...</span></td>
                 </tr>
                 </tbody>
             </table>
-
-
-
         </div>
 
     </div>
     <div class="row">
         <div class="col-md-12">
             <h3>
-                <b>Current path: </b> C:\Simple
+                <b>Current path: </b>{{currentDirectory}}
             </h3>
 
         </div>
@@ -48,24 +54,33 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <ul id="fileList">
-                        <div>
-                            <li class="parentsDir"><a href="">..</a></li>
-                        </div>
-                        <div>
-                            <li class="directory"><a href="">folder</a></li>
-                        </div>
-                        <div>
-                            <li class="file"><a href="">file1.txt</a></li>
+                    <p ng-hide="loading">
+                        <img src="Content/img/loading.gif" width="200" height="200" alt="Loading..."/>
+                    </p>
+                    <ul id="fileList" ng-show="loading">
+                        <li class="parentsDir">
+                            <a ng-click="Transit(parentDirectory)" ng-show="parentDirectory">__</a>
+                        </li>
 
-                        </div>
+                        <li class="directory" ng-repeat="directory in directoreis">
+                            <a href="" ng-click="Transit(directory)">{{directory}}</a>
+                        </li>
+                        <li class="file" ng-repeat="file in files">
+                            {{file}}
+                        </li>
                     </ul>
+
+                    <p class="alert-danger" ng-repeat="error in errorMessage">{{error}}</p>
+                    
                 </div>
             </div>
+            <hr />
+            <p>The number of transitions {{count}}</p>
         </div>
     </div>
 
-</div>
 
+</div>
+    
 </body>
 </html>

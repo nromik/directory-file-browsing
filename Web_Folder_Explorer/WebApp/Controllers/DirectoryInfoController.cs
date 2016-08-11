@@ -10,9 +10,13 @@ namespace WebApp.Controllers
 {
     public class DirectoryInfoController : ApiController
     {
-        public HttpResponseMessage Get([FromUri]string path = "")
+        public HttpResponseMessage Get([FromUri]string path = "", [FromUri]bool isCountFiles = true )
         {
-            var result = DirectoryDriver.GetFolderInfo(path);
+            var re = Request.RequestUri;
+            var result = new DirectoryDriver(path).GetFolderInfo(isCountFiles,
+                s => s <= 10 * 1024 * 1024,
+                n => 10 * 1024 * 1024 < n && n <= 50 * 1024 * 1024,
+                n => 100 * 1024 * 1024 <= n);
 
             return result != null ? Request.CreateResponse(HttpStatusCode.OK, result) : Request.CreateResponse(HttpStatusCode.NotFound);
         }
