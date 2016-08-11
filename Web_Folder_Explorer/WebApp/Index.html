@@ -2,10 +2,70 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-	<meta charset="utf-8" />
+    <title>Web Folder Explorer</title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap-theme.min.css" rel="stylesheet"/>
+    <link href="Content/main.css" rel="stylesheet" />
+    <meta charset="utf-8" />
 </head>
 <body>
-    <h1>Hello World)</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered" id="fileSize">
+                <thead>
+                <tr>
+                    <th>Less 10Mb</th>
+                    <th>10Mb-50Mb</th>
+                    <th>More 100Mb</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Loading...</td>
+                    <td>Loading...</td>
+                    <td>Loading...</td>
+                </tr>
+                </tbody>
+            </table>
+
+
+
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>
+                <b>Current path: </b> C:\Simple
+            </h3>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <ul id="fileList">
+                        <div>
+                            <li class="parentsDir"><a href="">..</a></li>
+                        </div>
+                        <div>
+                            <li class="directory"><a href="">folder</a></li>
+                        </div>
+                        <div>
+                            <li class="file"><a href="">file1.txt</a></li>
+
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>
