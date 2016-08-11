@@ -1,0 +1,44 @@
+﻿body {
+    height: 100%;
+}
+
+#fileSize {
+
+}
+
+#fileSize th, 
+#fileSize td {
+    text-align: center;
+    border: 3px solid #ccc;
+    font-size: 16px;
+}
+
+#fileSize th {
+    background: #ccc;
+    color: white;
+    
+}
+
+    #fileSize td {
+        font-weight: 600;
+    }
+
+    #fileList{
+        margin-left: 10px;
+        padding-left: 10px;
+        font-size: 16px;
+    }
+    #fileList li{
+        list-style-type: none;
+    }
+    #fileList a {
+
+        text-decoration: none;
+    }
+
+#fileList  li.parentsDir:hover,
+    #fileList  li.directory:hover {
+       
+        background-color: #f5f5f5; 
+    }
+
