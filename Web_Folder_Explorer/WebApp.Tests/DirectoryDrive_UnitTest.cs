@@ -13,8 +13,8 @@ namespace WebApp.Tests
         [TestMethod]
         public void IsNullOrEmptyPath()
         {
-            var folderInfo1 = DirectoryDriver.GetFolderInfo(null);
-            var folderInfo2 = DirectoryDriver.GetFolderInfo("");
+            var folderInfo1 = new DirectoryDriver(null).GetFolderInfo();
+            var folderInfo2 = new DirectoryDriver(null).GetFolderInfo(); ;
 
             Assert.AreEqual(folderInfo1.CurrentDirectory, Directory.GetCurrentDirectory());
             Assert.AreEqual(folderInfo2.CurrentDirectory, Directory.GetCurrentDirectory());
@@ -23,7 +23,7 @@ namespace WebApp.Tests
         [TestMethod]
         public void GetDirectoryAndFile()
         {
-            var folderInfo = DirectoryDriver.GetFolderInfo("");
+            var folderInfo = new DirectoryDriver(null).GetFolderInfo();
 
             var path = Directory.GetCurrentDirectory();
 
@@ -34,7 +34,7 @@ namespace WebApp.Tests
         [TestMethod]
         public void PathRoot()
         {
-            var folderInfo = DirectoryDriver.GetFolderInfo("root");
+            var folderInfo = new DirectoryDriver("root").GetFolderInfo(); ;
 
             var driverInfo = DriveInfo.GetDrives().Select(d => d.Name).ToArray();
 
@@ -52,16 +52,16 @@ namespace WebApp.Tests
         [TestMethod]
         public void BedDirectory()
         {
-            var folderInfo = DirectoryDriver.GetFolderInfo(@"test:\\test");
+            var folderInfo = new DirectoryDriver(@"test:\\test").GetFolderInfo(); 
 
-            Assert.AreEqual(folderInfo,null);
+            Assert.AreEqual(folderInfo.CurrentDirectory,null);
         }
 
         [TestMethod]
         public void UnauthorizedAccess()
         {
             var dirSystem = DriveInfo.GetDrives()[0].Name + "System Volume Information";
-            var folderInfo = DirectoryDriver.GetFolderInfo(dirSystem);
+            var folderInfo = new DirectoryDriver(dirSystem).GetFolderInfo();
 
             Assert.IsNotNull(folderInfo.ErrorMessage);
         }
